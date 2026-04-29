@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kidz Nation Staff</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #FF4757; /* Red */
+            --secondary: #1E90FF; /* Blue */
+            --accent: #FFA502; /* Yellow */
+            --success: #2ED573; /* Green */
+            --bg: #F1F2F6;
+            --text: #2F3542;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 10% 20%, rgba(255, 165, 2, 0.1) 0%, transparent 20%),
+                              radial-gradient(circle at 90% 80%, rgba(30, 144, 255, 0.1) 0%, transparent 20%);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+            min-height: 550px;
+        }
+
+        /* Top Header */
+        .header {
+            background: var(--secondary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+        }
+
+        .header h1 {
+            font-weight: 900;
+            font-size: 24px;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+        }
+
+        .header .subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .history-btn-top {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 0px #cf8600;
+            transition: 0.1s;
+        }
+        .history-btn-top:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0px #cf8600;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+            padding: 30px 20px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Inputs & Buttons */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--secondary);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #dfe4ea;
+            border-radius: 15px;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--accent);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 900;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 5px 0px rgba(0,0,0,0.2);
+            transition: 0.1s;
+            margin-bottom: 15px;
+        }
+
+        .btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 0px 0px rgba(0,0,0,0.2);
+        }
+
+        .btn-login { background: var(--success); box-shadow: 0 5px 0px #21a557; }
+        .btn-clockin { background: var(--success); box-shadow: 0 5px 0px #21a557; }
+        .btn-clockout { background: var(--primary); box-shadow: 0 5px 0px #c23642; }
+        .btn-back { background: #7bed9f; box-shadow: 0 5px 0px #5eb378; color: var(--text); }
+        .btn-download { background: var(--secondary); box-shadow: 0 5px 0px #1569bb; }
+
+        /* Dashboard Stopwatch */
+        .stopwatch-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .stopwatch {
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--primary);
+            background: #ffeaa7;
+            padding: 20px;
+            border-radius: 20px;
+            display: inline-block;
+            border: 4px dashed var(--accent);
+        }
+
+        .status-text {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        /* History Screen */
+        .history-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .history-controls input {
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .history-table th, .history-table td {
+            border: 1px solid #dfe4ea;
+            padding: 10px;
+            text-align: center;
+        }
+        .history-table th {
+            background: var(--accent);
+            color: white;
+        }
+
+        #location-msg {
+            text-align: center;
+            font-size: 14px;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🎈 Kidz Nation 🧸</h1>
+        <div class="subtitle">Staff Portal</div>
+        <button id="navHistoryBtn" class="history-btn-top" style="display:none;" onclick="showHistory()"><i class="fas fa-history"></i> History</button>
+    </div>
+
+    <div id="login-screen" class="screen active">
+        <div style="text-align:center; margin-bottom: 20px;">
+            <i class="fas fa-smile-beam" style="font-size: 50px; color: var(--accent);"></i>
+            <p style="margin-top:10px; font-weight:bold;">Welcome Back!</p>
+        </div>
+        <div class="input-group">
+            <label>Staff Name / ID</label>
+            <input type="text" id="username" placeholder="Enter your name">
+        </div>
+        <div class="input-group">
+            <label>Password / Code</label>
+            <input type="password" id="password" placeholder="Enter your code">
+        </div>
+        <button class="btn btn-login" onclick="login()">Let's Play! (Login)</button>
+    </div>
+
+    <div id="dashboard-screen" class="screen">
+        <h2 style="text-align:center; color:var(--secondary);" id="welcomeUser">Hi, User!</h2>
+        
+        <div class="stopwatch-container">
+            <div class="stopwatch" id="stopwatch">00:00:00</div>
+        </div>
+
+        <div id="location-msg">Checking location...</div>
+
+        <button id="clockInBtn" class="btn btn-clockin" onclick="clockIn()"><i class="fas fa-sign-in-alt"></i> Clock In</button>
+        <button id="clockOutBtn" class="btn btn-clockout" style="display:none;" onclick="clockOut()"><i class="fas fa-sign-out-alt"></i> Clock Out</button>
+    </div>
+
+    <div id="history-screen" class="screen">
+        <h2 style="margin-bottom: 15px; color:var(--secondary); text-align:center;">My Attendance</h2>
+        
+        <div class="history-controls">
+            <input type="date" id="startDate">
+            <input type="date" id="endDate">
+        </div>
+
+        <div id="printArea">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>In</th>
+                        <th>Out</th>
+                        <th>OT (Hrs)</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody">
+                    </tbody>
+            </table>
+        </div>
+
+        <button class="btn btn-download" onclick="downloadPDF()"><i class="fas fa-download"></i> Download PDF</button>
+        <button class="btn btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Back</button>
+    </div>
+</div>
+
+<script>
+    // --- Configuration ---
+const SHOP_LAT = 24.11040; // ඔයාගේ හරියටම Latitude එක දාන්න
+const SHOP_LNG = 55.70237; // ඔයාගේ හරියටම Longitude එක දාන්න
+const MAX_DISTANCE_KM = 0.1; // 100m
+
+// මෙන්න මෙතනට ඔයා අර Copy කරගත්ත Web App URL එක දාන්න! අනිවාර්යයි!
+const GAS_URL = "
+https://script.google.com/macros/s/AKfycbwg7f4gMJECvYljGSFOnDBruvi70EFjiP6yRrGL8JMLbSpCt0v44CnOpMde1CacAPsa/exec"; 
+
+// --- State Variables ---
+let currentUser = null;
+let currentPin = null;
+let currentStore = null;
+let timerInterval;
+let startTime;
+
+window.onload = () => {
+    const lockedUser = localStorage.getItem('kidznation_user');
+    if (lockedUser) {
+        currentUser = lockedUser;
+        currentPin = localStorage.getItem('kidznation_pin');
+        currentStore = localStorage.getItem('kidznation_store');
+        checkExistingSession();
+        showDashboard();
+    }
+};
+
+async function login() {
+    const user = document.getElementById('username').value.trim();
+    const pass = document.getElementById('password').value.trim();
+
+    if(user === "" || pass === "") {
+        alert("Please enter Name and PIN!");
+        return;
+    }
+
+    const lockedUser = localStorage.getItem('kidznation_user');
+    if(lockedUser && lockedUser !== user) {
+        alert("This device is locked to " + lockedUser);
+        return;
+    }
+
+    // Google Sheet එකට Request එක යවනවා
+    const btn = document.querySelector('.btn-login');
+    btn.innerText = "Checking...";
+    
+    try {
+        const response = await fetch(GAS_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'login', username: user, pin: pass })
+        });
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            localStorage.setItem('kidznation_user', user);
+            localStorage.setItem('kidznation_pin', pass);
+            localStorage.setItem('kidznation_store', result.store);
+            
+            currentUser = user;
+            currentPin = pass;
+            currentStore = result.store;
+            showDashboard();
+        } else {
+            alert(result.message);
+        }
+    } catch (error) {
+        alert("Network Error! Try again.");
+    }
+    btn.innerText = "Let's Play! (Login)";
+}
+
+function showDashboard() {
+    document.getElementById('login-screen').classList.remove('active');
+    document.getElementById('dashboard-screen').classList.add('active');
+    document.getElementById('welcomeUser').innerText = "Hi, " + currentUser + "!";
+    checkLocation();
+}
+
+function checkLocation() {
+    const msg = document.getElementById('location-msg');
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const distance = getDistanceFromLatLonInKm(SHOP_LAT, SHOP_LNG, lat, lng);
+                
+                if (distance <= MAX_DISTANCE_KM) {
+                    msg.innerText = "Location Verified ✅";
+                    msg.style.color = "var(--success)";
+                    document.getElementById('clockInBtn').disabled = false;
+                } else {
+                    msg.innerText = "You are out of range! (" + (distance*1000).toFixed(0) + "m away)";
+                    msg.style.color = "var(--primary)";
+                    document.getElementById('clockInBtn').disabled = true;
+                }
+            },
+            (error) => {
+                msg.innerText = "Enable Location Service! ⚠️";
+                msg.style.color = "var(--primary)";
+                document.getElementById('clockInBtn').disabled = true;
+            }
+        );
+    }
+}
+
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+    const R = 6371; 
+    const dLat = (lat2-lat1) * (Math.PI/180);
+    const dLon = (lon2-lon1) * (Math.PI/180); 
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * (Math.PI/180)) * Math.cos(lat2 * (Math.PI/180)) * Math.sin(dLon/2) * Math.sin(dLon/2); 
+    return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+}
+
+async function clockIn() {
+    document.getElementById('clockInBtn').innerText = "Wait...";
+    
+    try {
+        const response = await fetch(GAS_URL, {
+            method: 'POST',
+            body: JSON.stringify({ 
+                action: 'clockIn', 
+                username: currentUser, 
+                pin: currentPin, 
+                store: currentStore 
+            })
+        });
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            startTime = new Date();
+            localStorage.setItem('clockInTime', startTime.toISOString());
+            document.getElementById('clockInBtn').style.display = 'none';
+            document.getElementById('clockOutBtn').style.display = 'block';
+            timerInterval = setInterval(updateStopwatch, 1000);
+            alert("Clocked In! Start playing!");
+        }
+    } catch (e) { alert("Error connecting to server."); }
+    document.getElementById('clockInBtn').innerText = "Clock In";
+}
+
+async function clockOut() {
+    document.getElementById('clockOutBtn').innerText = "Wait...";
+    
+    const endTime = new Date();
+    const durationMs = endTime - startTime;
+    const durationHours = (durationMs / (1000 * 60 * 60)).toFixed(2);
+    let overtime = durationHours > 9 ? (durationHours - 9).toFixed(2) : 0;
+
+    try {
+        const response = await fetch(GAS_URL, {
+            method: 'POST',
+            body: JSON.stringify({ 
+                action: 'clockOut', 
+                username: currentUser,
+                duration: durationHours + " Hrs",
+                overtime: overtime > 0 ? overtime + " Hrs" : "None"
+            })
+        });
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            clearInterval(timerInterval);
+            localStorage.removeItem('clockInTime');
+            document.getElementById('stopwatch').innerText = "00:00:00";
+            document.getElementById('clockOutBtn').style.display = 'none';
+            document.getElementById('clockInBtn').style.display = 'block';
+            alert("Clocked Out successfully!");
+        }
+    } catch (e) { alert("Error connecting to server."); }
+    document.getElementById('clockOutBtn').innerHTML = '<i class="fas fa-sign-out-alt"></i> Clock Out';
+}
+
+function checkExistingSession() {
+    const savedTime = localStorage.getItem('clockInTime');
+    if (savedTime) {
+        startTime = new Date(savedTime);
+        document.getElementById('clockInBtn').style.display = 'none';
+        document.getElementById('clockOutBtn').style.display = 'block';
+        timerInterval = setInterval(updateStopwatch, 1000);
+    }
+}
+
+function updateStopwatch() {
+    const diff = new Date() - startTime;
+    const hrs = Math.floor(diff / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const secs = Math.floor((diff % (1000 * 60)) / 1000);
+    document.getElementById('stopwatch').innerText = 
+        String(hrs).padStart(2, '0') + ":" + String(mins).padStart(2, '0') + ":" + String(secs).padStart(2, '0');
+}
+
+    // --- History & Download ---
+    function loadMockHistory() {
+        // මෙය පසුව Google Sheet එකෙන් fetch කරන්න හදාගන්න පුලුවන්
+        const tbody = document.getElementById('historyBody');
+        tbody.innerHTML = `
+            <tr><td>2026-04-28</td><td>08:00 AM</td><td>06:30 PM</td><td>1.5</td></tr>
+            <tr><td>2026-04-29</td><td>08:15 AM</td><td>05:15 PM</td><td>0</td></tr>
+        `;
+    }
+
+    function downloadPDF() {
+        const element = document.getElementById('printArea');
+        const opt = {
+            margin:       1,
+            filename:     currentUser + '_Attendance.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save();
+    }
+
+</script>
+</body>
+</html>
